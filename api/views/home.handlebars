@@ -1,0 +1,23 @@
+<h1>Lista de Pacientes</h1>
+
+    <table>
+        <thead>
+            <th>ID</th>
+            <th>Paciente</th>
+            <th>Idade</th>
+            <th>Teste</th>
+        </thead>
+
+        {{#each pacientes}}
+            <tbody>
+                <tr>
+                    <td>{{dataValues.id}}</td>
+                    <td>{{dataValues.nome}}</td>
+                    <td>{{dataValues.idade}}</td>
+                    <td>{{dataValues.teste}}</td>
+                </tr>
+            </tbody>
+        {{/each}}
+    </table>
+
+<a href="/cadastro" type="button">Novo</a>
