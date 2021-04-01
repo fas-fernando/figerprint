@@ -1,15 +1,14 @@
 const express = require("express");
+const cors = require('cors')
 const handlebars = require("express-handlebars");
 const Sequelize = require('sequelize');
 const bodyParser = require("body-parser");
 const Paciente = require("./models/Paciente");
 const app = express();
+app.use(cors())
+
 
 // Config:
-
-// Template Engine
-app.engine("handlebars", handlebars({ defaultLayout: "main" }));
-app.set("view engine", "handlebars");
 
 // Body Parser
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -23,19 +22,14 @@ const sequelize = new Sequelize('sistemaCadastro', 'root', 'root', {
 
 // Rotas
 app.get("/", function(req, res) {
-    Paciente.findAll().then(function(pacientes) {
-        console.log(pacientes);
-        res.render("home", { pacientes: pacientes });
+    Paciente.findAll().then((pacientes) => {
+        res.json(pacientes);
     });
 });
 
-app.get("/cadastro", function(req, res) {
-    res.render("formulario");
-});
-
-app.post("/novo", function(req, res) {
+app.post("/paciente", function(req, res) {
     Paciente.create({
-        nome: req.body.paciente,
+        nome: req.body.nome,
         idade: req.body.idade,
         teste: req.body.teste
     }).then(function() {
@@ -43,6 +37,20 @@ app.post("/novo", function(req, res) {
     }).catch(function(erro) {
         res.send(`Houve um erro: ${erro}`);
     });
+});
+
+app.get("/:id", function(req, res) {
+    Paciente.destroy({
+        where: {
+            "id": req.params.id
+        }
+        .then(function() {
+            res.send("Paciente apagado com sucesso!")
+        })
+        .catch(function(erro) {
+            res.send("Este paciente não existe!")
+        })
+    })
 });
 
 // Iniciando Servidor Local
