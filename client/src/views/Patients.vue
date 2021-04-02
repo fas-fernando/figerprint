@@ -1,9 +1,9 @@
 <template>
   <v-container>
     <v-data-table
+      :loading="loading"
       :headers="headers"
       :items="patients"
-      sort-by="calories"
       class="elevation-1"
     >
       <template v-slot:top>
@@ -16,13 +16,50 @@
           </v-btn>
         </v-toolbar>
       </template>
+
+      <template v-slot:body="{ items }">
+        <tbody v-if="items.length">
+          <tr v-for="patient in items" :key="patient.id">
+            <td align="left" v-text="patient.nome"></td>
+            <td align="left" v-text="patient.idade"></td>
+            <td
+              width="10%"
+              align="left"
+              v-text="`${patient.teste ? 'Positivo' : 'Negativo'}`"
+            ></td>
+            <td>
+              <v-menu offset-y>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn fab icon x-small v-bind="attrs" v-on="on">
+                    <v-icon>mdi-dots-vertical</v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item @click="edit(patient)">
+                    Editar
+                  </v-list-item>
+
+                  <v-list-item @click="remove(patient)">
+                    Deletar
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </td>
+          </tr>
+        </tbody>
+      </template>
     </v-data-table>
 
-    <PatientForm :patient="patient" v-model="dialog" />
+    <PatientForm :patient="patient" v-model="dialog" @saved="initialize" />
   </v-container>
 </template>
 
 <script>
+import {
+  deletePatient,
+  fetchAllPatients,
+} from "../repositories/PatientRepository";
+
 export default {
   name: "Patients",
 
@@ -32,6 +69,7 @@ export default {
 
   data: () => ({
     dialog: false,
+    loading: false,
     headers: [
       {
         text: "Nome",
@@ -58,24 +96,42 @@ export default {
 
   methods: {
     initialize() {
-      this.patients = [];
+      this.loading = true;
+      fetchAllPatients()
+        .then((res) => {
+          this.patients = res.data;
+        })
+        .finally(() => {
+          setTimeout(() => {
+            this.loading = false;
+          }, 1000);
+        });
     },
 
     add() {
       this.patient = {
-        name: null,
-        age: null,
-        has_covid: false,
+        nome: null,
+        idade: null,
+        teste: false,
       };
       this.dialog = true;
     },
 
-    edit() {
-      console.log("edit");
+    edit(patient) {
+      this.patient = { ...patient };
+      this.dialog = true;
     },
 
-    remove() {
-      console.log("delete");
+    remove(patient) {
+      if (confirm("Deseja realmente excluir?")) {
+        deletePatient(patient.id)
+          .then(() => {
+            this.initialize();
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
     },
   },
 };

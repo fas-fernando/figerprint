@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require('cors')
-const handlebars = require("express-handlebars");
 const Sequelize = require('sequelize');
 const bodyParser = require("body-parser");
 const Paciente = require("./models/Paciente");
@@ -27,7 +26,7 @@ app.get("/", function(req, res) {
     });
 });
 
-app.post("/paciente", function(req, res) {
+app.post("/", function(req, res) {
     Paciente.create({
         nome: req.body.nome,
         idade: req.body.idade,
@@ -39,19 +38,27 @@ app.post("/paciente", function(req, res) {
     });
 });
 
-app.get("/:id", function(req, res) {
+app.delete("/:id", function(req, res) {
     Paciente.destroy({
         where: {
-            "id": req.params.id
+            id: req.params.id
         }
-        .then(function() {
-            res.send("Paciente apagado com sucesso!")
-        })
-        .catch(function(erro) {
-            res.send("Este paciente não existe!")
-        })
+    }).then(() => {
+        res.send(`Paciente excluido com sucesso`)
     })
 });
+
+app.put("/", function(req, res) {
+    Paciente.update({
+        nome: req.body.nome,
+        idade: req.body.idade,
+        teste: req.body.teste
+    }, {
+        where: { id: req.body.id }
+    }).then(() => {
+        res.send("sucesso");
+    })
+})
 
 // Iniciando Servidor Local
 app.listen(8081, () => {
