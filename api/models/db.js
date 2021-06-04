@@ -1,7 +1,7 @@
 const Sequelize = require("sequelize");
 
 // Conexão do Banco de Dados MySQL
-const sequelize = new Sequelize("pacientes", "root", "root", {
+const sequelize = new Sequelize("pacientes", "root", "Admin123$", {
     host: "localhost",
     dialect: "mysql"
 });

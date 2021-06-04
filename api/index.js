@@ -26,6 +26,10 @@ app.get("/", function(req, res) {
     });
 });
 
+// app.get("/", function(req, res){
+//     res.send("SEja bem vindo ao meu app");
+// });
+
 app.post("/", function(req, res) {
     Paciente.create({
         nome: req.body.nome,
@@ -61,6 +65,6 @@ app.put("/", function(req, res) {
 })
 
 // Iniciando Servidor Local
-app.listen(8081, () => {
-    console.log("Servidor rodando na url http://localhost:8081");
+app.listen(8082, () => {
+    console.log("Servidor rodando na url http://localhost:8082");
 });
